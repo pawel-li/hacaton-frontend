@@ -1,9 +1,10 @@
 import { cookies } from "next/headers"
 import Link from "next/link"
-import { createProject } from "./actions"
+import { createProject, deleteProject } from "./actions"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card"
+import { Trash2 } from "lucide-react"
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8009"
 
@@ -64,21 +65,39 @@ export default async function ProjectsPage() {
           <p className="text-muted-foreground col-span-full">No projects found. Create one above!</p>
         ) : (
           projects.map((project) => (
-            <Link key={project.id} href={`/projects/${project.id}`} className="block">
-              <Card className="hover:shadow-md transition-shadow h-full cursor-pointer">
-                <CardHeader className="py-4">
-                  <CardTitle className="text-xl">{project.name}</CardTitle>
-                  {project.description && (
-                    <CardDescription className="line-clamp-2">{project.description}</CardDescription>
-                  )}
-                  <CardDescription>
-                    {project.date
-                      ? `Date: ${new Date(project.date).toLocaleDateString()}`
-                      : `Created ${new Date(project.created_at).toLocaleDateString()}`}
-                  </CardDescription>
-                </CardHeader>
-              </Card>
-            </Link>
+            <div key={project.id} className="relative group">
+              <Link href={`/projects/${project.id}`} className="block">
+                <Card className="hover:shadow-md transition-shadow h-full cursor-pointer">
+                  <CardHeader className="py-4 pr-12">
+                    <CardTitle className="text-xl">{project.name}</CardTitle>
+                    {project.description && (
+                      <CardDescription className="line-clamp-2">{project.description}</CardDescription>
+                    )}
+                    <CardDescription>
+                      {project.date
+                        ? `Date: ${new Date(project.date).toLocaleDateString()}`
+                        : `Created ${new Date(project.created_at).toLocaleDateString()}`}
+                    </CardDescription>
+                  </CardHeader>
+                </Card>
+              </Link>
+              <form
+                action={deleteProject.bind(null, project.id)}
+                className="absolute top-3 right-3"
+              >
+                <Button
+                  type="submit"
+                  variant="ghost"
+                  size="icon"
+                  className="h-8 w-8 text-muted-foreground hover:text-destructive opacity-0 group-hover:opacity-100 transition-opacity"
+                  onClick={(e) => {
+                    if (!confirm(`Delete "${project.name}"?`)) e.preventDefault()
+                  }}
+                >
+                  <Trash2 className="h-4 w-4" />
+                </Button>
+              </form>
+            </div>
           ))
         )}
       </div>

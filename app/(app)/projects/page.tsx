@@ -1,10 +1,10 @@
 import { cookies } from "next/headers"
 import Link from "next/link"
-import { createProject, deleteProject } from "./actions"
+import { createProject } from "./actions"
+import { DeleteProjectButton } from "./delete-button"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card"
-import { Trash2 } from "lucide-react"
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8009"
 
@@ -81,22 +81,7 @@ export default async function ProjectsPage() {
                   </CardHeader>
                 </Card>
               </Link>
-              <form
-                action={deleteProject.bind(null, project.id)}
-                className="absolute top-3 right-3"
-              >
-                <Button
-                  type="submit"
-                  variant="ghost"
-                  size="icon"
-                  className="h-8 w-8 text-muted-foreground hover:text-destructive opacity-0 group-hover:opacity-100 transition-opacity"
-                  onClick={(e) => {
-                    if (!confirm(`Delete "${project.name}"?`)) e.preventDefault()
-                  }}
-                >
-                  <Trash2 className="h-4 w-4" />
-                </Button>
-              </form>
+              <DeleteProjectButton id={project.id} name={project.name} />
             </div>
           ))
         )}

@@ -6,6 +6,7 @@ import { cn } from "@/lib/utils";
 import { AppSidebar } from "@/components/app-sidebar"
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar"
 import { Toaster } from "@/components/ui/sonner"
+import { AuthProvider } from "@/components/auth-provider"
 
 const geist = Geist({subsets:['latin'],variable:'--font-sans'})
 
@@ -27,13 +28,15 @@ export default function RootLayout({
     >
       <body>
         <ThemeProvider>
-          <SidebarProvider>
-            <AppSidebar />
-            <main className="w-full">
-              {children}
-            </main>
-          </SidebarProvider>
-          <Toaster />
+          <AuthProvider>
+            <SidebarProvider>
+              <AppSidebar />
+              <main className="w-full">
+                {children}
+              </main>
+            </SidebarProvider>
+            <Toaster />
+          </AuthProvider>
         </ThemeProvider>
       </body>
     </html>

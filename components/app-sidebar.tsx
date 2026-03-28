@@ -23,9 +23,29 @@ import {
   SidebarMenuSub,
   SidebarMenuSubItem,
   SidebarMenuSubButton,
+  SidebarFooter,
   SidebarRail,
 } from "@/components/ui/sidebar"
-import { prisma } from "@/lib/prisma"
+import { cookies } from "next/headers"
+import { LogoutButton } from "@/components/logout-button"
+
+const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8009"
+
+async function fetchProjects() {
+  const cookieStore = await cookies()
+  const token = cookieStore.get("auth_token")?.value
+  if (!token) return []
+  try {
+    const res = await fetch(`${API_URL}/projects`, {
+      headers: { Authorization: `Bearer ${token}` },
+      next: { revalidate: 30 },
+    })
+    if (!res.ok) return []
+    return res.json() as Promise<{ id: string; name: string }[]>
+  } catch {
+    return []
+  }
+}
 
 type SidebarTreeItem = {
   title: string
@@ -45,9 +65,7 @@ const folderColorByName: Record<string, string> = {
 const getFolderColor = (title: string) => folderColorByName[title.toLowerCase()] ?? vividFolderPalette[3]
 
 export async function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
-  const projects = await prisma.project.findMany({
-    orderBy: { createdAt: 'desc' }
-  })
+  const projects = await fetchProjects()
 
   const projectTreeItems: SidebarTreeItem[] = projects.map((project) => {
     const datasets = [
@@ -212,6 +230,9 @@ export async function AppSidebar({ ...props }: React.ComponentProps<typeof Sideb
           </SidebarGroup>
         ))}
       </SidebarContent>
+      <SidebarFooter>
+        <LogoutButton />
+      </SidebarFooter>
       <SidebarRail />
     </Sidebar>
   )

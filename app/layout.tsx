@@ -5,6 +5,7 @@ import { ThemeProvider } from "@/components/theme-provider"
 import { cn } from "@/lib/utils";
 import { AppSidebar } from "@/components/app-sidebar"
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar"
+import { Toaster } from "@/components/ui/sonner"
 
 const geist = Geist({subsets:['latin'],variable:'--font-sans'})
 
@@ -32,6 +33,7 @@ export default function RootLayout({
               {children}
             </main>
           </SidebarProvider>
+          <Toaster />
         </ThemeProvider>
       </body>
     </html>
